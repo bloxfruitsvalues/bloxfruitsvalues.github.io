@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blox Fruits Trade Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(45deg, #ff8a00, #ff2070, #00c3ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            color: #e0e0e0;
+        }
+        
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .offer-section {
+            background: rgba(30, 30, 46, 0.85);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ff8a00;
+            font-size: 1.8rem;
+            color: #ffcc00;
+        }
+        
+        .fruit-selector {
+            margin-bottom: 20px;
+        }
+        
+        .fruit-selector label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            color: #ffcc00;
+        }
+        
+        .fruit-dropdown {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 2px solid #ff8a00;
+            background: rgba(20, 20, 35, 0.8);
+            color: #fff;
+            font-size: 1rem;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffcc00' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 20px;
+            cursor: pointer;
+        }
+        
+        .fruit-dropdown option {
+            background: rgba(20, 20, 35, 0.95);
+            padding: 10px;
+        }
+        
+        .add-button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(45deg, #ff8a00, #ff2070);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .add-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 138, 0, 0.4);
+        }
+        
+        .add-button:active {
+            transform: translateY(0);
+        }
+        
+        .selected-fruits {
+            min-height: 180px;
+            border: 2px dashed #ff8a00;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background: rgba(20, 20, 35, 0.4);
+        }
+        
+        .fruit-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            margin-bottom: 10px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .fruit-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+        }
+        
+        .fruit-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .fruit-image {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 5px;
+        }
+        
+        .fruit-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .fruit-value {
+            color: #ffcc00;
+            font-weight: bold;
+        }
+        
+        .remove-fruit {
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .remove-fruit:hover {
+            background: #ff1a1a;
+            transform: scale(1.1);
+        }
+        
+        .total-value {
+            text-align: right;
+            font-size: 1.3rem;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            color: #ffcc00;
+            font-weight: bold;
+        }
+        
+        .comparison-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        #value-difference {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-align: center;
+            min-height: 60px;
+            color: #ffcc00;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+            width: 100%;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+        
+        .calculate-button {
+            padding: 15px 40px;
+            border-radius: 50px;
+            border: none;
+            background: linear-gradient(45deg, #00c3ff, #00ff95);
+            color: #1a2a6c;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 195, 255, 0.3);
+        }
+        
+        .calculate-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 195, 255, 0.5);
+        }
+        
+        .calculate-button:active {
+            transform: translateY(0);
+        }
+        
+        .trade-result {
+            background: rgba(30, 30, 46, 0.9);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            display: none;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .trade-result h3 {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #ffcc00;
+        }
+        
+        .trade-result p {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .fair-trade {
+            background: rgba(40, 167, 69, 0.2);
+            border-left: 5px solid #28a745;
+        }
+        
+        .unfair-trade {
+            background: rgba(220, 53, 69, 0.2);
+            border-left: 5px solid #dc3545;
+        }
+        
+        .fruit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+        }
+        
+        .fruit-card {
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        
+        .fruit-card:hover {
+            transform: translateY(-5px);
+            background: rgba(50, 50, 80, 0.8);
+        }
+        
+        .fruit-card img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+        
+        .fruit-card .name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #ffcc00;
+        }
+        
+        .fruit-card .value {
+            color: #00ff95;
+            font-size: 0.9rem;
+        }
+        
+        .empty-message {
+            text-align: center;
+            color: #aaa;
+            font-style: italic;
+            padding: 20px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        .vs-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ff2070;
+            text-shadow: 0 0 10px rgba(255, 32, 112, 0.5);
+            margin: 20px 0;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .section-header i {
+            color: #ff8a00;
+            font-size: 1.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Blox Fruits Trade Calculator</h1>
+            <p>Calculate fair trades for Blox Fruits in-game items. Add fruits to both sides to compare values and get trade fairness analysis.</p>
+        </header>
+        
+        <div class="calculator-grid">
+            <!-- Left Side (Your Offer) -->
+            <div class="offer-section">
+                <div class="section-header">
+                    <i class="fas fa-user"></i>
+                    <h2 class="section-title">Your Offer</h2>
+                </div>
+                
+                <div class="fruit-selector">
+                    <label for="your-fruit">Select Fruit:</label>
+                    <select id="your-fruit" class="fruit-dropdown">
+                        <option value="0">Select a fruit</option>
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
+                </div>
+                
+                <button id="add-your-fruit" class="add-button">
+                    <i class="fas fa-plus-circle"></i> Add Fruit
+                </button>
+                
+                <div class="selected-fruits" id="your-selected-fruits">
+                    <p class="empty-message">No fruits added yet</p>
+                </div>
+                
+                <div class="total-value">
+                    <strong>Your Total Value:</strong>
+                    <span id="your-total">0</span>
+                </div>
+            </div>
+            
+            <!-- Middle (Comparison) -->
+            <div class="comparison-section">
+                <div id="value-difference">=</div>
+                <button id="calculate-trade" class="calculate-button">
+                    <i class="fas fa-calculator"></i> Calculate Trade
+                </button>
+            </div>
+            
+            <!-- Right Side (Their Offer) -->
+            <div class="offer-section">
+                <div class="section-header">
+                    <i class="fas fa-users"></i>
+                    <h2 class="section-title">Their Offer</h2>
+                </div>
+                
+                <div class="fruit-selector">
+                    <label for="their-fruit">Select Fruit:</label>
+                    <select id="their-fruit" class="fruit-dropdown">
+                        <option value="0">Select a fruit</option>
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
+                </div>
+                
+                <button id="add-their-fruit" class="add-button">
+                    <i class="fas fa-plus-circle"></i> Add Fruit
+                </button>
+                
+                <div class="selected-fruits" id="their-selected-fruits">
+                    <p class="empty-message">No fruits added yet</p>
+                </div>
+                
+                <div class="total-value">
+                    <strong>Their Total Value:</strong>
+                    <span id="their-total">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="vs-container">
+            <i class="fas fa-swords"></i> VS <i class="fas fa-swords"></i>
+        </div>
+        
+        <div class="trade-result" id="trade-result">
+            <!-- Trade result will appear here -->
+        </div>
+        
+        <div class="fruit-grid" id="fruit-grid">
+            <!-- Fruit cards will be populated by JavaScript -->
+        </div>
+        
+        <footer>
+            <p>Blox Fruits Trade Calculator &copy; 2025 | Values based on current Blox Fruits trading market</p>
+        </footer>
+    </div>
+
+    <script>
+        // Fruit data with names, values, and image URLs
+        const fruits = [
+            { name: "Barrier", value: 50000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FCommon%2FBarrier_InventoryIcon.webp&w=128&q=75" },
+            { name: "Blizzard", value: 1200000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FLegendary%2FBlizzard_InventoryIcon.webp&w=128&q=75" },
+            { name: "Buddha", value: 900000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FRare%2FBuddha_InventoryIcon.webp&w=128&q=75" },
+            { name: "Chop", value: 10000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FCommon%2FChop_InventoryIcon.webp&w=128&q=75" },
+            { name: "Control", value: 2000000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FMythical%2FControl_InventoryIcon.webp&w=128&q=75" },
+            { name: "Dark", value: 150000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FCommon%2FDark_InventoryIcon.webp&w=128&q=75" },
+            { name: "Diamond", value: 100000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FCommon%2FDiamond_InventoryIcon.webp&w=128&q=75" },
+            { name: "Dough", value: 2500000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FMythical%2FDough_InventoryIcon.webp&w=128&q=75" },
+            { name: "Dragon", value: 4000000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FMythical%2FDragon_InventoryIcon.webp&w=128&q=75" },
+            { name: "Falcon", value: 50000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FCommon%2FFalcon_InventoryIcon.webp&w=128&q=75" },
+            { name: "Flame", value: 250000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FCommon%2FFlame_InventoryIcon.webp&w=128&q=75" },
+            { name: "Gravity", value: 500000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FLegendary%2FGravity_InventoryIcon.webp&w=128&q=75" },
+            { name: "Ice", value: 200000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FCommon%2FIce_InventoryIcon.webp&w=128&q=75" },
+            { name: "Kitsune", value: 5000000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FMythical%2FKitsune_InventoryIcon.webp&w=128&q=75" },
+            { name: "Leopard", value: 5000000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FMythical%2FLeopard_InventoryIcon.webp&w=128&q=75" },
+            { name: "Light", value: 100000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FCommon%2FLight_InventoryIcon.webp&w=128&q=75" },
+            { name: "Love", value: 300000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FUncommon%2FLove_InventoryIcon.webp&w=128&q=75" },
+            { name: "Magma", value: 300000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FUncommon%2FMagma_InventoryIcon.webp&w=128&q=75" },
+            { name: "Mammoth", value: 2200000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FMythical%2FMammoth_InventoryIcon.webp&w=128&q=75" },
+            { name: "Pain", value: 500000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FUncommon%2FPain_InventoryIcon.webp&w=128&q=75" },
+            { name: "Phoenix", value: 1000000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FLegendary%2FPhoenix_InventoryIcon.webp&w=128&q=75" },
+            { name: "Portal", value: 1000000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FLegendary%2FPortal_InventoryIcon.webp&w=128&q=75" },
+            { name: "Quake", value: 300000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FUncommon%2FQuake_InventoryIcon.webp&w=128&q=75" },
+            { name: "Rubber", value: 100000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FCommon%2FRubber_InventoryIcon.webp&w=128&q=75" },
+            { name: "Rumble", value: 1000000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FLegendary%2FRumble_InventoryIcon.webp&w=128&q=75" },
+            { name: "Sand", value: 150000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FCommon%2FSand_InventoryIcon.webp&w=128&q=75" },
+            { name: "Shadow", value: 1200000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FLegendary%2FShadow_InventoryIcon.webp&w=128&q=75" },
+            { name: "Sound", value: 900000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FRare%2FSound_InventoryIcon.webp&w=128&q=75" },
+            { name: "Spider", value: 300000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FUncommon%2FSpider_InventoryIcon.webp&w=128&q=75" },
+            { name: "Spin", value: 50000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FCommon%2FSpin_InventoryIcon.webp&w=128&q=75" },
+            { name: "Spirit", value: 1800000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FMythical%2FSpirit_InventoryIcon.webp&w=128&q=75" },
+            { name: "T-Rex", value: 2200000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FMythical%2FT-Rex_InventoryIcon.webp&w=128&q=75" },
+            { name: "Venom", value: 2200000, image: "https://bloxfruitsvalues.com/_next/image?url=%2Fassets%2Ffruits%2FinventoryIcon%2FLegendary%2FVenom_InventoryIcon.webp&w=128&q=75" }
+        ];
+
+        // Sort fruits alphabetically
+        fruits.sort((a, b) => a.name.localeCompare(b.name));
+
+        // Selected fruits arrays
+        let yourSelectedFruits = [];
+        let theirSelectedFruits = [];
+
+        // DOM elements
+        const yourFruitSelect = document.getElementById('your-fruit');
+        const theirFruitSelect = document.getElementById('their-fruit');
+        const yourSelectedFruitsContainer = document.getElementById('your-selected-fruits');
+        const theirSelectedFruitsContainer = document.getElementById('their-selected-fruits');
+        const yourTotalElement = document.getElementById('your-total');
+        const theirTotalElement = document.getElementById('their-total');
+        const valueDifferenceElement = document.getElementById('value-difference');
+        const tradeResultElement = document.getElementById('trade-result');
+        const addYourFruitButton = document.getElementById('add-your-fruit');
+        const addTheirFruitButton = document.getElementById('add-their-fruit');
+        const calculateTradeButton = document.getElementById('calculate-trade');
+        const fruitGrid = document.getElementById('fruit-grid');
+
+        // Initialize dropdowns
+        function initializeDropdowns() {
+            fruits.forEach(fruit => {
+                // Create option for your offer dropdown
+                const option1 = document.createElement('option');
+                option1.value = fruit.value;
+                option1.textContent = `${fruit.name} (${formatNumber(fruit.value)})`;
+                option1.dataset.image = fruit.image;
+                yourFruitSelect.appendChild(option1);
+                
+                // Create option for their offer dropdown
+                const option2 = document.createElement('option');
+                option2.value = fruit.value;
+                option2.textContent = `${fruit.name} (${formatNumber(fruit.value)})`;
+                option2.dataset.image = fruit.image;
+                theirFruitSelect.appendChild(option2);
+            });
+        }
+
+        // Create fruit grid
+        function createFruitGrid() {
+            fruits.forEach(fruit => {
+                const fruitCard = document.createElement('div');
+                fruitCard.className = 'fruit-card';
+                fruitCard.innerHTML = `
+                    <img src="${fruit.image}" alt="${fruit.name}">
+                    <div class="name">${fruit.name}</div>
+                    <div class="value">${formatNumber(fruit.value)}</div>
+                `;
+                fruitCard.addEventListener('click', () => {
+                    // Add to your offer when clicked
+                    yourSelectedFruits.push({ 
+                        name: fruit.name, 
+                        value: fruit.value, 
+                        image: fruit.image 
+                    });
+                    updateSelectedFruitsDisplay(yourSelectedFruitsContainer, yourSelectedFruits, yourTotalElement);
+                    updateComparison();
+                });
+                fruitGrid.appendChild(fruitCard);
+            });
+        }
+
+        // Format number with commas
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // Add fruit to your offer
+        addYourFruitButton.addEventListener('click', () => {
+            const selectedOption = yourFruitSelect.options[yourFruitSelect.selectedIndex];
+            if (selectedOption.value === "0") return;
+            
+            const fruitName = selectedOption.text.split(' (')[0];
+            const fruitValue = parseInt(selectedOption.value);
+            const fruitImage = selectedOption.dataset.image;
+            
+            yourSelectedFruits.push({ name: fruitName, value: fruitValue, image: fruitImage });
+            updateSelectedFruitsDisplay(yourSelectedFruitsContainer, yourSelectedFruits, yourTotalElement);
+            updateComparison();
+        });
+
+        // Add fruit to their offer
+        addTheirFruitButton.addEventListener('click', () => {
+            const selectedOption = theirFruitSelect.options[theirFruitSelect.selectedIndex];
+            if (selectedOption.value === "0") return;
+            
+            const fruitName = selectedOption.text.split(' (')[0];
+            const fruitValue = parseInt(selectedOption.value);
+            const fruitImage = selectedOption.dataset.image;
+            
+            theirSelectedFruits.push({ name: fruitName, value: fruitValue, image: fruitImage });
+            updateSelectedFruitsDisplay(theirSelectedFruitsContainer, theirSelectedFruits, theirTotalElement);
+            updateComparison();
+        });
+
+        // Update selected fruits display
+        function updateSelectedFruitsDisplay(container, fruitsArray, totalElement) {
+            container.innerHTML = '';
+            
+            if (fruitsArray.length === 0) {
+                container.innerHTML = '<p class="empty-message">No fruits selected</p>';
+                totalElement.textContent = '0';
+                return;
+            }
+            
+            let totalValue = 0;
+            
+            fruitsArray.forEach((fruit, index) => {
+                totalValue += fruit.value;
+                
+                const fruitElement = document.createElement('div');
+                fruitElement.className = 'fruit-item';
+                fruitElement.innerHTML = `
+                    <div class="fruit-info">
+                        <img src="${fruit.image}" alt="${fruit.name}" class="fruit-image">
+                        <div>
+                            <div class="fruit-name">${fruit.name}</div>
+                            <div class="fruit-value">${formatNumber(fruit.value)}</div>
+                        </div>
+                    </div>
+                    <button class="remove-fruit" data-index="${index}">×</button>
+                `;
+                container.appendChild(fruitElement);
+            });
+            
+            totalElement.textContent = formatNumber(totalValue);
+            
+            // Add event listeners to remove buttons
+            container.querySelectorAll('.remove-fruit').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const index = parseInt(e.target.getAttribute('data-index'));
+                    fruitsArray.splice(index, 1);
+                    updateSelectedFruitsDisplay(container, fruitsArray, totalElement);
+                    updateComparison();
+                });
+            });
+        }
+
+        // Calculate total value of fruits array
+        function calculateTotal(fruitsArray) {
+            return fruitsArray.reduce((total, fruit) => total + fruit.value, 0);
+        }
+
+        // Update the comparison display
+        function updateComparison() {
+            const yourTotal = calculateTotal(yourSelectedFruits);
+            const theirTotal = calculateTotal(theirSelectedFruits);
+            const difference = theirTotal - yourTotal;
+            
+            if (yourTotal === 0 && theirTotal === 0) {
+                valueDifferenceElement.textContent = "=";
+            } else if (difference === 0) {
+                valueDifferenceElement.textContent = "=";
+            } else if (difference > 0) {
+                valueDifferenceElement.textContent = `+${formatNumber(difference)}`;
+            } else {
+                valueDifferenceElement.textContent = `${formatNumber(difference)}`;
+            }
+        }
+
+        // Calculate and display trade result
+        calculateTradeButton.addEventListener('click', () => {
+            const yourTotal = calculateTotal(yourSelectedFruits);
+            const theirTotal = calculateTotal(theirSelectedFruits);
+            const difference = theirTotal - yourTotal;
+            const percentageDifference = Math.abs(difference) / Math.max(yourTotal, theirTotal) * 100;
+            
+            tradeResultElement.style.display = 'block';
+            
+            if (yourTotal === 0 || theirTotal === 0) {
+                tradeResultElement.innerHTML = '<p>Please add fruits to both sides to calculate a trade.</p>';
+                tradeResultElement.className = 'trade-result';
+                return;
+            }
+            
+            if (difference === 0) {
+                tradeResultElement.innerHTML = `
+                    <h3>Perfectly Fair Trade!</h3>
+                    <p>Both offers have exactly the same value (${formatNumber(yourTotal)}).</p>
+                    <p>This is an ideal trade where both parties get equal value.</p>
+                `;
+                tradeResultElement.className = 'trade-result fair-trade';
+            } else if (Math.abs(difference) <= 100000 || percentageDifference <= 5) {
+                tradeResultElement.innerHTML = `
+                    <h3>Fair Trade</h3>
+                    <p>The difference is within an acceptable range (${difference > 0 ? '+' : ''}${formatNumber(difference)}).</p>
+                    <p>Your offer: ${formatNumber(yourTotal)}</p>
+                    <p>Their offer: ${formatNumber(theirTotal)}</p>
+                    <p>This trade is considered fair by most players.</p>
+                `;
+                tradeResultElement.className = 'trade-result fair-trade';
+            } else if (difference > 0) {
+                tradeResultElement.innerHTML = `
+                    <h3>Advantageous Trade for You</h3>
+                    <p>Their offer is better by +${formatNumber(difference)}.</p>
+                    <p>Your offer: ${formatNumber(yourTotal)}</p>
+                    <p>Their offer: ${formatNumber(theirTotal)}</p>
+                    <p>This trade is in your favor! You're getting more value than you're giving.</p>
+                `;
+                tradeResultElement.className = 'trade-result fair-trade';
+            } else {
+                tradeResultElement.innerHTML = `
+                    <h3>Unfair Trade for You</h3>
+                    <p>Your offer is better by ${formatNumber(-difference)}.</p>
+                    <p>Your offer: ${formatNumber(yourTotal)}</p>
+                    <p>Their offer: ${formatNumber(theirTotal)}</p>
+                    <p>This trade is not in your favor. You're giving more value than you're receiving. Consider negotiating or declining.</p>
+                `;
+                tradeResultElement.className = 'trade-result unfair-trade';
+            }
+        });
+
+        // Initialize the calculator
+        initializeDropdowns();
+        createFruitGrid();
+        updateSelectedFruitsDisplay(yourSelectedFruitsContainer, yourSelectedFruits, yourTotalElement);
+        updateSelectedFruitsDisplay(theirSelectedFruitsContainer, theirSelectedFruits, theirTotalElement);
+    </script>
+</body>
+</html>
